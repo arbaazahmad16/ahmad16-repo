@@ -11,7 +11,7 @@ node{
 		slackSend baseUrl: 'https://hooks.slack.com/services/', 
 		channel: 'jenkins-pipeline-demo', 
 		color: 'good', 
-		message: 'Welcome to Jenkins, Slack !!!', 	
+		message: 'Welcome to my slack notification using jenkins pipeline !!!', 	
 		teamDomain: 'My-AWS-Slackworkspace.slack.com', 
 		tokenCredentialId: 'slack-demo', 
 		username: 'javahomecloud'
