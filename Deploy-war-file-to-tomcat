@@ -9,14 +9,14 @@ node{
         }
         stage("Deploy to tomcat"){
                 sshagent(['tomcat-dev']) {
-                  sh 'scp -o StrictHostKeyChecking=no target/*.war ec2-user@172.31.5.33:/opt/apache-tomcat-10.1.24/webapps/'
+                  sh 'scp -o StrictHostKeyChecking=no target/*.war ec2-user@172.31.13.84:/opt/apache-tomcat-9.0.94/webapps/'
             }
         }
         stage("Notification-Slack"){
                 slackSend baseUrl: 'https://hooks.slack.com/services/',
                 channel: 'jenkins-pipeline-demo',
                 color: 'good',
-                message: 'Welcome to my slack notification using jenkins pipeline !!!',
+                message: 'This notification is to verify that the war file is genereted in tomcat server !!!',
                 teamDomain: 'My-AWS-Slackworkspace.slack.com',
                 tokenCredentialId: 'slack-demo',
                 username: 'javahomecloud'
