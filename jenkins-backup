@@ -1,20 +1,61 @@
 pipeline {
-	agent any
-	stages {
-		stage("Jenkins Backup") {
-			steps {
-				sh '''
-         				cd /var/lib
-		 			zip -r jenkins-backup.zip jenkins
-   					'''
-			}
-		}
-		stage("Upload into s3 bucket") {
-			steps {
-				script {
-					s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'arbaaz-s3-bucket-9f9e514c9302f49a', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: false, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: '/var/lib/jenkins', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 's3-backup', userMetadata: []
-				}
-			}
-		}
-	}
+    agent any
+
+    environment {
+        BACKUP_DIR = '/var/lib/jenkins_backup'  // Directory for backup
+        S3_BUCKET = 'arbaaz-s3-bucket-9f9e514c9302f49a'       // Replace with your S3 bucket name
+        BACKUP_FILE = "jenkins_backup_${env.BUILD_ID}.tar.gz"
+        AWS_REGION = 'us-east-1'                // Set your AWS region
+    }
+
+    stages {
+        stage('Backup Jenkins Configuration') {
+            steps {
+                script {
+                    echo "Starting Jenkins backup..."
+                    
+                    // Create backup directory if not exists
+                    sh """
+                        mkdir -p ${BACKUP_DIR}
+                        tar -czf ${BACKUP_DIR}/${BACKUP_FILE} /var/lib/jenkins
+                    """
+                    
+                    echo "Backup created at ${BACKUP_DIR}/${BACKUP_FILE}"
+                }
+            }
+        }
+
+        stage('Upload Backup to S3') {
+            steps {
+                script {
+                    echo "Uploading backup to S3..."
+                    
+                    // Upload backup to S3 bucket
+                    sh """
+                        aws s3 cp ${BACKUP_DIR}/${BACKUP_FILE} s3://${S3_BUCKET}/backups/${BACKUP_FILE} --region ${AWS_REGION}
+                    """
+                    
+                    echo "Backup uploaded to S3 bucket: s3://${S3_BUCKET}/backups/${BACKUP_FILE}"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up backup file from local machine
+            sh """
+                rm -f ${BACKUP_DIR}/${BACKUP_FILE}
+            """
+            echo "Cleaned up local backup file"
+        }
+
+        success {
+            echo "Backup and upload completed successfully!"
+        }
+
+        failure {
+            echo "Backup or upload failed. Check the logs for more information."
+        }
+    }
 }
