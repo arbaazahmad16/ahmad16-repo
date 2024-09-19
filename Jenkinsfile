@@ -8,12 +8,9 @@ node{
 		sh "${mvnHome}/bin/mvn package"
 	}
 	stage("Notification-Slack"){
-		slackSend baseUrl: 'https://hooks.slack.com/services/', 
-		channel: 'jenkins-pipeline-demo', 
-		color: 'good', 
-		message: 'Welcome to my slack notification using jenkins pipeline !!! Webhook success', 	
-		teamDomain: 'My-AWS-Slackworkspace.slack.com', 
-		tokenCredentialId: 'slack-demo', 
-		username: 'javahomecloud'
+		slackSend channel: 'jenkins-pipeline-demo', 
+			color: 'warning', 
+			message: 'Welcome to my slack notification using jenkins pipeline !!! Webhook success', 
+			tokenCredentialId: 'slack-demo'
 	}
 }
