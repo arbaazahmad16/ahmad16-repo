@@ -1,3 +1,5 @@
+currentBuild.displayName = "slack-notify-#"+currentBuild.number
+
 node{
 	stage("SCM Checkout"){
 		git "https://github.com/arbaazahmad16/ahmad16-repo"
