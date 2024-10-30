@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+
+    environment {
+        // Define environment variables for S3 bucket and AWS credentials
+        S3_BUCKET = 'arbaaz-s3-bucket-9f9e514c9302f49a'
+        AWS_REGION = 'us-east-1'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Pull code from Git repository
+                checkout scm
+            }
+        }
+        
+        stage('Install Dependencies') {
+            steps {
+                // Install npm dependencies
+                sh 'npm install'
+            }
+        }
+
+        stage('Build Application') {
+            steps {
+                // Build the ReactJS application for production
+                sh 'npm run build'
+            }
+        }
+
+        stage('Deploy to S3') {
+            steps {
+                withAWS(region: "${AWS_REGION}", credentials: 'aws-credentials-id') {
+                    // Sync the build output to the S3 bucket
+                    sh 'aws s3 sync build/ s3://${S3_BUCKET} --delete'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment to S3 was successful!'
+        }
+        failure {
+            echo 'Deployment failed.'
+        }
+    }
+}
