@@ -40,13 +40,15 @@ pipeline {
             }
         }
         stage("Notification-Slack"){
-		slackSend baseUrl: 'https://hooks.slack.com/services/',
-                channel: 'jenkins-pipeline-demo',
-                color: 'good',
-                message: 'Jenkins backup completed successfully',
-                teamDomain: 'My-AWS-Slackworkspace.slack.com',
-                tokenCredentialId: 'slack-demo',
-                username: 'javahomecloud'
+		steps{
+			slackSend baseUrl: 'https://hooks.slack.com/services/',
+	                channel: 'jenkins-pipeline-demo',
+	                color: 'good',
+	                message: 'Jenkins backup completed successfully',
+	                teamDomain: 'My-AWS-Slackworkspace.slack.com',
+	                tokenCredentialId: 'slack-demo',
+	                username: 'javahomecloud'
+		}
 	}
     }
 
