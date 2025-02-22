@@ -15,4 +15,12 @@ pipeline{
 		}	
 	}
     }
+	post {
+        success {
+            echo 'Pipeline ia successful!!!'
+        }
+        failure {
+            echo 'Pipeline is failed.'
+        }
+    }
 }
