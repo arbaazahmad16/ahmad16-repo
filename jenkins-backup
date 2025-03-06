@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         BACKUP_DIR = '/var/lib/jenkins_backup'  // Directory for backup
-        S3_BUCKET = 'arbaaz-s3-bucket-9f9e514c9302f49a' // S3 bucket
+        S3_BUCKET = 'arbaaz-s3-bucket-d3bf92ea3867ab07' // S3 bucket
         BACKUP_FILE = "jenkins_backup_${env.BUILD_ID}.tar.gz"
-        AWS_REGION = 'us-east-1'                // Set your AWS region
+        AWS_REGION = 'ap-south-1'                // Set your AWS region
     }
 
     stages {
