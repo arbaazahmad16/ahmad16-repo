@@ -17,7 +17,7 @@ pipeline {
                     // Create backup directory if not exists
                     sh """
                         mkdir -p ${BACKUP_DIR}
-                        tar -czf ${BACKUP_DIR}/${BACKUP_FILE} /var/lib/jenkins
+                        sudo tar -czf ${BACKUP_DIR}/${BACKUP_FILE} /var/lib/jenkins
                     """
                     
                     echo "Backup created at ${BACKUP_DIR}/${BACKUP_FILE}"
@@ -32,7 +32,7 @@ pipeline {
                     
                     // Upload backup to S3 bucket
                     sh """
-                        aws s3 cp ${BACKUP_DIR}/${BACKUP_FILE} s3://${S3_BUCKET}/backups/${BACKUP_FILE} --region ${AWS_REGION}
+                        sudo aws s3 cp ${BACKUP_DIR}/${BACKUP_FILE} s3://${S3_BUCKET}/backups/${BACKUP_FILE} --region ${AWS_REGION}
                     """
                     
                     echo "Backup uploaded to S3 bucket: s3://${S3_BUCKET}/backups/${BACKUP_FILE}"
