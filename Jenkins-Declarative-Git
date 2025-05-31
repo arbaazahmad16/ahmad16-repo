@@ -1,5 +1,5 @@
 pipeline{
-    agent any
+    agent {label 'ubuntu'}
 	environment{
 		PATH = "/opt/apache-maven-3.9.9/bin:$PATH"
 	}
