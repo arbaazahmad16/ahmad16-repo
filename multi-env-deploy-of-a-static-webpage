@@ -1,0 +1,74 @@
+pipeline{
+	agent any
+	parameters{
+		choice(name:"ENV", choices:["Dev",'Prod'], description:"Select Environment")
+	}
+	environment{
+		SSH_CREDENTIAL_ID='ec2-ssh-key'
+		DEPLOY_DIR='/usr/share/nginx/html'
+	}
+	stages{
+	    stage("Build Sample Website") {
+            steps {
+                script {
+                    sh '''
+                    cat > index.html <<EOF
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Sample Website</title>
+                        <style>
+                            body { 
+                                font-family: Arial; 
+                                text-align: center; 
+                                margin-top: 100px;
+                                background-color: #f4f4f4;
+                            }
+                            h1 { color: #2c3e50; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Deployment Successful 🚀</h1>
+                        <p>Build Time: $(date)</p>
+                    </body>
+                    </html>
+                    EOF
+                    '''
+                }
+            }
+        }
+		stage("Approve Deployment"){
+			steps{
+				script{
+					input message: 'Deploy to ${params.ENV}? Confirm to procced'
+				}
+			}
+		}
+		stage("Deploy"){
+			steps{
+				sshagent([env.SSH_CREDENTIAL_ID]){
+					script{
+						def host = ''
+						if (params.ENV.trim() =='Dev'){
+							host = '13.233.150.44'
+						}
+						else if (params.ENV.trim() =='Prod'){
+							host = '13.233.150.44'
+						}
+						else{
+							error "Unknown environment: ${params.ENV}"
+						}
+						sh 'pwd'
+                        sh 'ls -la'
+						retry{
+							echo "Deploying to ${host}..."
+							echo "ENV selected: ${params.ENV}"
+                            echo "Host value: ${host}"
+							sh "scp -o StrictHostKeyChecking=no index.html ec2-user@${host}:${DEPLOY_DIR}" 
+						}
+					}
+				}
+			}
+		}
+	}
+}
